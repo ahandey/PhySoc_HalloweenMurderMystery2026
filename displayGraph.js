@@ -1,4 +1,4 @@
-const nodeRadius = 30;
+const nodeRadius = 15;
 const boxApothem = nodeRadius * Math.sqrt(0.5);
 
 function drawArrow(start, end) {
@@ -17,7 +17,7 @@ function drawArrow(start, end) {
   line(0, 0, vec.x, vec.y);
   
   rotate(vec.heading());
-  let arrowSize = 7;
+  let arrowSize = 4;
   translate(vec.mag() - arrowSize, 0);
   triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
   
@@ -26,10 +26,8 @@ function drawArrow(start, end) {
 
 class DisplayNode {
   constructor(node) {
-    this.pos = createVector(
-      2*random() - 1,
-      2*random() - 1
-    );
+    let ang = TAU * random();
+    this.pos = createVector(cos(ang), sin(ang)).mult(100);
     this.vel = createVector(0, 0);
     this.acc = createVector(0, 0);
 
@@ -50,6 +48,7 @@ class DisplayNode {
     noStroke();
     fill(255);
     textAlign(CENTER, CENTER);
+    textSize(6);
     text(
       this.node.person.name,
       pos.x - boxApothem,
@@ -92,7 +91,7 @@ class DisplayGraph {
       let node1 = this.nodes[edge[1]];
 
       let r = p5.Vector.sub(node0.pos, node1.pos);
-      let a = r.mult(-1);
+      let a = r.copy().mult(1 / r.mag() - 1).mult(10);
 
       node0.acc.add(a);
       node1.acc.sub(a);
@@ -101,11 +100,11 @@ class DisplayGraph {
     for (let i = 0; i < this.nodes.length; i++) {
       let node0 = this.nodes[i];
 
-      for (let j = 0; j < this.nodes.length; j++) {
+      for (let j = 0; j < i; j++) {
         let node1 = this.nodes[j];
 
         let r = p5.Vector.sub(node0.pos, node1.pos);
-        let a = r.mult(1/(0.001+pow(r.magSq(), 1.5)));
+        let a = r.mult(100000/pow(r.magSq(), 1.5));
   
         node0.acc.add(a);
         node1.acc.sub(a);
@@ -113,7 +112,7 @@ class DisplayGraph {
     }
 
     for (let node of this.nodes) {
-      node.acc.add(node.vel.copy().mult(-2));
+      node.acc.add(node.vel.copy().mult(-5));
     }
 
     for (let node of this.nodes) {
