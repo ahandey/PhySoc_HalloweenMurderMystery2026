@@ -15,3 +15,7 @@ function draw() {
   graph.update(0.01);
   graph.display();
 }
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
